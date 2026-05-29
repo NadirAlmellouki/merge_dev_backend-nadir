@@ -1,0 +1,316 @@
+"use strict";
+
+/** UUIDs partagés (alignés sur studysync_database.sql) */
+const IDS = {
+  users: {
+    sara: "00000000-0000-0000-0000-000000000005",
+    jean: "00000000-0000-0000-0000-000000000006",
+    maria: "00000000-0000-0000-0000-000000000007",
+    ahmed: "00000000-0000-0000-0000-000000000008",
+    karima: "00000000-0000-0000-0000-000000000009",
+    fatima: "00000000-0000-0000-0000-000000000010",
+    mounir: "00000000-0000-0000-0000-000000000003",
+    laila: "00000000-0000-0000-0000-000000000004",
+    adminAli: "00000000-0000-0000-0000-000000000002",
+    youssef: "00000000-0000-0000-0000-000000000012",
+    nadia: "00000000-0000-0000-0000-000000000013",
+  },
+  sessions: {
+    calculus: "aaaaaaaa-0000-0000-0000-000000000001",
+    biology: "aaaaaaaa-0000-0000-0000-000000000005",
+    spam: "aaaaaaaa-0000-0000-0000-000000000009",
+  },
+  messages: {
+    spam: "bbbbbbbb-0000-0000-0000-000000000001",
+  },
+  reports: {
+    harassment: "cccccccc-0000-0000-0000-000000000001",
+    spamSession: "cccccccc-0000-0000-0000-000000000002",
+    fakeProfile: "cccccccc-0000-0000-0000-000000000003",
+    spamMessage: "cccccccc-0000-0000-0000-000000000004",
+    dismissed: "cccccccc-0000-0000-0000-000000000005",
+  },
+  adminActions: {
+    banNadia: "dddddddd-0000-0000-0000-000000000001",
+    deleteSpamSession: "dddddddd-0000-0000-0000-000000000002",
+    deleteSpamMessage: "dddddddd-0000-0000-0000-000000000003",
+    dismissReport: "dddddddd-0000-0000-0000-000000000004",
+    suspendYoussef: "dddddddd-0000-0000-0000-000000000005",
+    promoteMounir: "dddddddd-0000-0000-0000-000000000006",
+    promoteLaila: "dddddddd-0000-0000-0000-000000000007",
+  },
+};
+
+const now = () => new Date();
+
+const messages = [
+  {
+    id: IDS.messages.spam,
+    session_id: IDS.sessions.calculus,
+    sender_id: IDS.users.nadia,
+    content: "Venez rejoindre notre programme de marketing ! Lien : spam.com",
+    message_type: "text",
+    media_url: null,
+    is_deleted: true,
+    deleted_by_admin_id: IDS.users.mounir,
+    deleted_at: new Date(Date.now() - 5 * 60 * 1000),
+    sent_at: new Date(Date.now() - 8 * 60 * 1000),
+  },
+];
+
+const ratings = [
+  {
+    rater_id: IDS.users.sara,
+    rated_id: IDS.users.karima,
+    session_id: IDS.sessions.biology,
+    overall_score: 5,
+    punctuality_score: 5,
+    engagement_score: 5,
+    would_study_again: true,
+    comment:
+      "Karima est une excellente hôte ! Très bien organisée, explications claires",
+    created_at: now(),
+  },
+  {
+    rater_id: IDS.users.sara,
+    rated_id: IDS.users.maria,
+    session_id: IDS.sessions.biology,
+    overall_score: 4,
+    punctuality_score: 4,
+    engagement_score: 5,
+    would_study_again: true,
+    comment:
+      "Très impliquée dans la session, bonnes questions et contributions",
+    created_at: now(),
+  },
+  {
+    rater_id: IDS.users.karima,
+    rated_id: IDS.users.sara,
+    session_id: IDS.sessions.biology,
+    overall_score: 5,
+    punctuality_score: 5,
+    engagement_score: 5,
+    would_study_again: true,
+    comment:
+      "Sara est toujours ponctuelle et très motivée. J adore étudier avec elle !",
+    created_at: now(),
+  },
+  {
+    rater_id: IDS.users.karima,
+    rated_id: IDS.users.maria,
+    session_id: IDS.sessions.biology,
+    overall_score: 4,
+    punctuality_score: 3,
+    engagement_score: 4,
+    would_study_again: true,
+    comment: "Bonne partenaire, légèrement en retard mais très participative",
+    created_at: now(),
+  },
+  {
+    rater_id: IDS.users.maria,
+    rated_id: IDS.users.sara,
+    session_id: IDS.sessions.biology,
+    overall_score: 5,
+    punctuality_score: 5,
+    engagement_score: 4,
+    would_study_again: true,
+    comment:
+      "Excellente, Sara maîtrise très bien le sujet et sait expliquer !",
+    created_at: now(),
+  },
+  {
+    rater_id: IDS.users.maria,
+    rated_id: IDS.users.karima,
+    session_id: IDS.sessions.biology,
+    overall_score: 5,
+    punctuality_score: 5,
+    engagement_score: 5,
+    would_study_again: true,
+    comment:
+      "Karima est très sérieuse et organise de super sessions. À refaire !",
+    created_at: now(),
+  },
+];
+
+const trustScoreUpdates = [
+  { id: IDS.users.sara, trust_score: 72.5 },
+  { id: IDS.users.karima, trust_score: 62.0 },
+  { id: IDS.users.maria, trust_score: 58.75 },
+];
+
+const reports = [
+  {
+    id: IDS.reports.harassment,
+    reporter_id: IDS.users.ahmed,
+    reported_user_id: IDS.users.youssef,
+    reported_session_id: null,
+    reported_message_id: null,
+    reason: "harassment",
+    description:
+      "Youssef m a envoyé des messages inappropriés après la session et a continué après que je lui ai demandé d arrêter.",
+    status: "pending",
+    resolution_action: null,
+    resolved_by_id: null,
+    resolved_at: null,
+    created_at: now(),
+  },
+  {
+    id: IDS.reports.spamSession,
+    reporter_id: IDS.users.sara,
+    reported_user_id: null,
+    reported_session_id: IDS.sessions.spam,
+    reported_message_id: null,
+    reason: "spam",
+    description:
+      "Cette session ne sert pas à étudier. C est de la publicité commerciale déguisée en session d étude.",
+    status: "pending",
+    resolution_action: null,
+    resolved_by_id: null,
+    resolved_at: null,
+    created_at: now(),
+  },
+  {
+    id: IDS.reports.fakeProfile,
+    reporter_id: IDS.users.jean,
+    reported_user_id: IDS.users.nadia,
+    reported_session_id: null,
+    reported_message_id: null,
+    reason: "fake_profile",
+    description:
+      "Ce profil semble faux, l utilisatrice ne répond pas et la photo ne correspond pas à une vraie étudiante.",
+    status: "resolved",
+    resolution_action:
+      "Compte banni définitivement après vérification : profil spam confirmé",
+    resolved_by_id: IDS.users.adminAli,
+    resolved_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+    created_at: now(),
+  },
+  {
+    id: IDS.reports.spamMessage,
+    reporter_id: IDS.users.karima,
+    reported_user_id: null,
+    reported_session_id: null,
+    reported_message_id: IDS.messages.spam,
+    reason: "spam",
+    description:
+      "Ce message contient un lien de spam externe dans le chat de la session.",
+    status: "pending",
+    resolution_action: null,
+    resolved_by_id: null,
+    resolved_at: null,
+    created_at: now(),
+  },
+  {
+    id: IDS.reports.dismissed,
+    reporter_id: IDS.users.fatima,
+    reported_user_id: IDS.users.jean,
+    reported_session_id: null,
+    reported_message_id: null,
+    reason: "other",
+    description: "Jean est trop strict dans sa façon d expliquer.",
+    status: "dismissed",
+    resolution_action:
+      "Rapport rejeté : aucune violation des CGU constatée. Simple désaccord pédagogique.",
+    resolved_by_id: IDS.users.mounir,
+    resolved_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+    created_at: now(),
+  },
+];
+
+const adminActions = [
+  {
+    id: IDS.adminActions.banNadia,
+    admin_id: IDS.users.adminAli,
+    action_type: "ban",
+    target_user_id: IDS.users.nadia,
+    target_session_id: null,
+    target_message_id: null,
+    target_report_id: IDS.reports.fakeProfile,
+    reason:
+      "Compte spam confirmé après investigation du rapport #cccc...003",
+    metadata: { previous_warnings: 0, sessions_deleted: 1 },
+    created_at: now(),
+  },
+  {
+    id: IDS.adminActions.deleteSpamSession,
+    admin_id: IDS.users.adminAli,
+    action_type: "delete_session",
+    target_user_id: null,
+    target_session_id: IDS.sessions.spam,
+    target_message_id: null,
+    target_report_id: null,
+    reason: "Session commerciale non académique — violation flagrante des CGU",
+    metadata: { session_subject: "Recrutement Stage", participant_count: 1 },
+    created_at: now(),
+  },
+  {
+    id: IDS.adminActions.deleteSpamMessage,
+    admin_id: IDS.users.mounir,
+    action_type: "delete_message",
+    target_user_id: null,
+    target_session_id: null,
+    target_message_id: IDS.messages.spam,
+    target_report_id: IDS.reports.spamMessage,
+    reason: "Message spam avec lien externe dans le chat",
+    metadata: { session_id: IDS.sessions.calculus },
+    created_at: now(),
+  },
+  {
+    id: IDS.adminActions.dismissReport,
+    admin_id: IDS.users.laila,
+    action_type: "dismiss_report",
+    target_user_id: null,
+    target_session_id: null,
+    target_message_id: null,
+    target_report_id: IDS.reports.dismissed,
+    reason: "Rapport non fondé — désaccord personnel sans violation des CGU",
+    metadata: {},
+    created_at: now(),
+  },
+  {
+    id: IDS.adminActions.suspendYoussef,
+    admin_id: IDS.users.mounir,
+    action_type: "suspend",
+    target_user_id: IDS.users.youssef,
+    target_session_id: null,
+    target_message_id: null,
+    target_report_id: IDS.reports.harassment,
+    reason: "Harcèlement confirmé suite au rapport. Suspension 3 jours.",
+    metadata: { duration_hours: 72, suspended_until: "3 days from now" },
+    created_at: now(),
+  },
+  {
+    id: IDS.adminActions.promoteMounir,
+    admin_id: IDS.users.adminAli,
+    action_type: "promote",
+    target_user_id: IDS.users.mounir,
+    target_session_id: null,
+    target_message_id: null,
+    target_report_id: null,
+    reason:
+      "Utilisateur de confiance avec trust_score élevé et comportement exemplaire",
+    metadata: { new_role: "moderator", previous_role: "student" },
+    created_at: now(),
+  },
+  {
+    id: IDS.adminActions.promoteLaila,
+    admin_id: IDS.users.adminAli,
+    action_type: "promote",
+    target_user_id: IDS.users.laila,
+    target_session_id: null,
+    target_message_id: null,
+    target_report_id: null,
+    reason: "Étudiante sérieuse, signalements pertinents dans le passé",
+    metadata: { new_role: "moderator", previous_role: "student" },
+    created_at: now(),
+  },
+];
+
+module.exports = {
+  IDS,
+  messages,
+  ratings,
+  trustScoreUpdates,
+  reports,
+  adminActions,
+};
