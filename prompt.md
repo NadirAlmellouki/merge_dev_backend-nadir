@@ -1,0 +1,3 @@
+j'ai ajouteé des nouveau taches de membre 2 vérifier est ce que tous et bien et est ce que le nouveau code ajouter est compatible avec l'ancien code , ajouter ces taches aussi , Create report endpoint (anyone can report)
+• List reports endpoint (admin/moderator only, with authentication check)
+• Resolve report endpoint (mark as resolved, take action) , et donne moi finalement tous les endpoint à tester avec le url de teste de chacun sur postman
