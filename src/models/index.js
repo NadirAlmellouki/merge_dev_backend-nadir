@@ -79,6 +79,12 @@ Report.belongsTo(StudySession, { foreignKey: "reported_session_id", as: "reporte
 Message.hasMany(Report, { foreignKey: "reported_message_id", as: "messageReports" });
 Report.belongsTo(Message, { foreignKey: "reported_message_id", as: "reportedMessage" });
 
+SessionParticipant.belongsTo(User, { foreignKey: "user_id", as: "user" });
+SessionParticipant.belongsTo(StudySession, { foreignKey: "session_id", as: "session" });
+
+StudySession.hasMany(SessionParticipant, { foreignKey: "session_id", as: "participants" });
+User.hasMany(SessionParticipant, { foreignKey: "user_id", as: "participations" });
+
 export {
   User,
   StudySession,

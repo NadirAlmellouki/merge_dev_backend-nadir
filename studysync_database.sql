@@ -98,7 +98,7 @@ CREATE TABLE study_sessions (
     location_name       VARCHAR(255),
     latitude            DECIMAL(10,8),
     longitude           DECIMAL(11,8),
-    scheduled_time      TIMESTAMPTZ  NOT NULL,
+    start_time          TIMESTAMPTZ  NOT NULL,
     duration_minutes    INTEGER      DEFAULT 120
                             CHECK (duration_minutes > 0 AND duration_minutes <= 480),
     max_participants    INTEGER      DEFAULT 5
@@ -123,7 +123,11 @@ CREATE INDEX idx_sessions_location     ON study_sessions USING GIST (location);
 CREATE INDEX idx_sessions_status       ON study_sessions (status);
 CREATE INDEX idx_sessions_subject      ON study_sessions (subject);
 CREATE INDEX idx_sessions_creator      ON study_sessions (creator_id);
+<<<<<<< HEAD
 CREATE INDEX idx_sessions_scheduled    ON study_sessions (scheduled_time);
+=======
+CREATE INDEX idx_sessions_start_time   ON study_sessions (start_time);
+>>>>>>> origin/dev
 CREATE INDEX idx_sessions_not_deleted  ON study_sessions (is_deleted) WHERE is_deleted = FALSE;
 
 COMMENT ON TABLE  study_sessions          IS 'Sessions d étude créées par les étudiants';
@@ -584,7 +588,11 @@ WHERE id = '00000000-0000-0000-0000-000000000013';
 INSERT INTO study_sessions (
     id, creator_id, subject, topic,
     location, location_name, latitude, longitude,
+<<<<<<< HEAD
     scheduled_time, duration_minutes, max_participants,
+=======
+    start_time, duration_minutes, max_participants,
+>>>>>>> origin/dev
     study_type, group_size, description, visibility, status
 ) VALUES
 
@@ -1101,7 +1109,11 @@ SELECT
     s.subject,
     s.status,
     s.location_name,
+<<<<<<< HEAD
     s.scheduled_time,
+=======
+    s.start_time,
+>>>>>>> origin/dev
     COUNT(sp.id) AS participant_count,
     u.first_name || ' ' || u.last_name AS creator
 FROM study_sessions s

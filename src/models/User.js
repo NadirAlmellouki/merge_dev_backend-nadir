@@ -32,6 +32,8 @@ const User = sequelize.define("user", {
   },
   year: {
     type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 1,
   },
   profile_photo: {
     type: DataTypes.STRING,
@@ -39,6 +41,7 @@ const User = sequelize.define("user", {
   },
   bio: {
     type: DataTypes.TEXT,
+    allowNull: true,
   },
   role: {
     type: DataTypes.ENUM("student", "moderator", "admin", "super_admin"),
@@ -48,6 +51,10 @@ const User = sequelize.define("user", {
   trust_score: {
     type: DataTypes.DECIMAL(3, 2),
     defaultValue: 0,
+  },
+  profile_photo: {
+    type: DataTypes.STRING,
+    allowNull: true,
   },
   is_suspended: {
     type: DataTypes.BOOLEAN,
